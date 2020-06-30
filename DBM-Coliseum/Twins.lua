@@ -1,7 +1,7 @@
 ﻿local mod	= DBM:NewMod("ValkTwins", "DBM-Coliseum")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision(("$Revision: 4395 $"):sub(12, -3))
+mod:SetRevision(("$Revision: 4396 $"):sub(12, -3))
 mod:SetCreatureID(34497, 34496)  
 mod:SetMinCombatTime(30)
 mod:SetUsedIcons(5, 6, 7, 8)
@@ -40,6 +40,7 @@ local timerAchieve					= mod:NewAchievementTimer(180, 3815, "TimerSpeedKill")
 mod:AddBoolOption("SpecialWarnOnDebuff", true, "announce")
 mod:AddBoolOption("SetIconOnDebuffTarget", true)
 mod:AddBoolOption("HealthFrame", true)
+mod:AddBoolOption("YellTouch", true)
 
 
 local debuffTargets					= {}
@@ -164,9 +165,9 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args:IsPlayer() and args:IsSpellID(65724, 67213, 67214, 67215) then 		-- Empowered Darkness
-		PlaySoundFile("Interface\\AddOns\\DBM-Core\\sounds\\nap.mp3", "Master")
+		specWarnEmpoweredDarkness:Show()
 	elseif args:IsPlayer() and args:IsSpellID(65748, 67216, 67217, 67218) then	-- Empowered Light
-		PlaySoundFile("Interface\\AddOns\\DBM-Core\\sounds\\nap.mp3", "Master")
+		specWarnEmpoweredLight:Show()
 	elseif args:IsSpellID(65950, 67296, 67297, 67298) then	-- Touch of Light
 		if args:IsPlayer() and self.Options.SpecialWarnOnDebuff then
 			specWarnSpecial:Show()
@@ -175,6 +176,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.SetIconOnDebuffTarget then
 			self:SetIcon(args.destName, debuffIcon, 15)
 			debuffIcon = debuffIcon - 1
+		end
+		if self.Options.YellTouch then
+			SendChatMessage(L.YellTouch, "SAY")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")
@@ -187,6 +191,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		if self.Options.SetIconOnDebuffTarget then
 			self:SetIcon(args.destName, debuffIcon)
 			debuffIcon = debuffIcon - 1
+		end
+		if self.Options.YellTouch then
+			SendChatMessage(L.YellTouch, "SAY")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")

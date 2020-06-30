@@ -1,10 +1,10 @@
 ﻿local mod	= DBM:NewMod("Jaraxxus", "DBM-Coliseum")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision(("$Revision: 4346 $"):sub(12, -3))
+mod:SetRevision(("$Revision: 4347 $"):sub(12, -3))
 mod:SetCreatureID(34780)
 mod:SetMinCombatTime(30)
-mod:SetUsedIcons(7, 8)
+mod:SetUsedIcons(3, 4, 7, 8)
 
 --mod:RegisterCombat("combat")
 mod:RegisterCombat("yell", L.Aggro)
@@ -42,7 +42,7 @@ local specWarnFelInferno		= mod:NewSpecialWarningMove(68718)
 local SpecWarnFelFireball		= mod:NewSpecialWarning("SpecWarnFelFireball", false)
 local SpecWarnFelFireballDispel	= mod:NewSpecialWarningDispel(66965, isMagicDispeller)
 
-local timerCombatStart			= mod:NewTimer(71.5, "TimerCombatStart", 2457) -- rollplay for first pull
+local timerCombatStart			= mod:NewTimer(71.5, "TimerCombatStart", 2457) -- roleplay for first pull
 local enrageTimer				= mod:NewBerserkTimer(600)
 local timerFlame 				= mod:NewTargetTimer(8, 68123) 		-- There are 8 debuff Ids. Since we detect first to warn, use an 8sec timer to cover duration of trigger spell and damage debuff.
 local timerFlameCD				= mod:NewCDTimer(30, 68125) 		-- Every 30 sec
@@ -54,14 +54,19 @@ local timerVolcanoCD			= mod:NewNextTimer(120, 67901) 		-- Every 120 sec
 local timerFelFireballCD		= mod:NewCDTimer(10, 66532, false) 	-- Every 10-15 sec
 local timerFelLightningCD		= mod:NewCDTimer(10, 66528, false) 	-- Every 10-15 sec
 
+local timerTouch				= mod:NewTargetTimer(12, 66209)
+local warnTouch					= mod:NewTargetAnnounce(66209, 2)
 
 mod:AddBoolOption("LegionFlameWhisper", false, "announce")
 mod:AddBoolOption("LegionFlameRunSound", true)
 mod:AddBoolOption("LegionFlameIcon", true)
+mod:AddBoolOption("TouchJaraxxusIcon", true, "misc")
 mod:AddBoolOption("IncinerateFleshIcon", true)
-
 mod:RemoveOption("HealthFrame")
 mod:AddBoolOption("IncinerateShieldFrame", true, "misc")
+mod:AddBoolOption("YellTouch", true, "announce")
+
+altIcon = true
 
 
 function mod:OnCombatStart(delay)
@@ -144,7 +149,18 @@ do
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args:IsSpellID(67051, 67050, 67049, 66237) then	-- Incinerate Flesh
+	if args:IsSpellID(66209) then -- Touch of Jaraxxus (HC only)
+		altIcon = not altIcon   --Alternates between Triangle and Diamond
+		if self.Options.TouchJaraxxusIcon then
+			self:SetIcon(args.destName, altIcon and 3 or 4, 10)
+		end
+		if args:IsPlayer() and self.Options.YellTouch then
+			SendChatMessage(L.YellTouch, "SAY")
+		end
+		warnTouch:Show(args.destName)
+		timerTouch:Start(args.destName)
+		
+	elseif args:IsSpellID(67051, 67050, 67049, 66237) then	-- Incinerate Flesh
 		warnFlesh:Show(args.destName)
 		timerFlesh:Start(args.destName)
 		timerFleshCD:Start()
@@ -188,6 +204,8 @@ function mod:SPELL_AURA_REMOVED(args)
 	if args:IsSpellID(67051, 67050, 67049, 66237) then	-- Incinerate Flesh
 		timerFlesh:Stop()
 		clearIncinerateTarget(self, args.destName)
+	elseif args:IsSpellID(66209) then -- Touch of Jaraxxus (HC only)
+		self:RemoveIcon(args.destName)
 	end
 end
 

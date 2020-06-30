@@ -6,6 +6,7 @@
 -- This addon is written and copyrighted by:
 --    * Paul Emmerich (Tandanu @ EU-Aegwynn) (DBM-Core)
 --    * Martin Verges (Nitram @ EU-Azshara) (DBM-GUI)
+--    * Voscor (Voscor @ Sunwell-Frosthold) (Sunwell Boost Modifications)
 --
 -- The localizations are written by:
 --    * enGB/enUS: Tandanu				http://www.deadlybossmods.com
@@ -42,10 +43,10 @@
 --  Globals/Default Options  --
 -------------------------------
 DBM = {
-	Revision = ("$Revision: 4442 $"):sub(12, -3),
-	Version = "4.52",
-	DisplayVersion = "4.52 edited by Raf", -- the string that is shown as version
-	ReleaseRevision = 4442 -- the revision of the latest stable version that is available (for /dbm ver2)
+	Revision = ("$Revision: 4447 $"):sub(12, -3),
+	Version = "4.56",
+	DisplayVersion = "Frosthold DBM (by Voscor)", -- the string that is shown as version
+	ReleaseRevision = 4446 -- the revision of the latest stable version that is available (for /dbm ver2)
 }
 
 DBM_SavedOptions = {}
@@ -80,12 +81,17 @@ DBM.DefaultOptions = {
 	ShowSpecialWarnings = true,
 	AlwaysShowHealthFrame = false,
 	ShowBigBrotherOnCombatStart = false,
+	RangeFrameFrames = "radar",
+	RangeFrameUpdates = "Average",
 	RangeFramePoint = "CENTER",
 	RangeFrameX = 50,
 	RangeFrameY = -50,
 	RangeFrameSound1 = "none",
 	RangeFrameSound2 = "none",
 	RangeFrameLocked = false,
+	RangeFrameRadarPoint = "CENTER",
+	RangeFrameRadarX = 100,
+	RangeFrameRadarY = -100,
 	HPFramePoint = "CENTER",
 	HPFrameX = -50,
 	HPFrameY = 50,
@@ -96,9 +102,13 @@ DBM.DefaultOptions = {
 	SpecialWarningFont = STANDARD_TEXT_FONT,
 	SpecialWarningFontSize = 50,
 	SpecialWarningFontColor = {0.0, 0.0, 1.0},
+	SpecialWarningFontColor2 = {r = 0.0, g = 1.0, b = 0.0},
 	HealthFrameGrowUp = false,
 	HealthFrameLocked = false,
 	HealthFrameWidth = 200,
+	HealthFrameHeight = 32,
+	HealthFrameBarTexture = "Interface\\PaperDollInfoFrame\\UI-Character-Skills-Bar",
+	HealthFrameBarBorder = "Interface\\PaperDollInfoFrame\\UI-Character-Skills-BarBorder",
 	ArrowPosX = 0,
 	ArrowPosY = -150,
 	ArrowPoint = "TOP",
@@ -259,9 +269,9 @@ do
 	local argsMT = {__index = {}}
 	local args = setmetatable({}, argsMT)
 	
-	function argsMT.__index:IsSpellID(a1, a2, a3, a4)
+	function argsMT.__index:IsSpellID(a1, a2, a3, a4, a5, a6, a7, a8)
 		local v = self.spellId
-		return v == a1 or v == a2 or v == a3 or v == a4
+		return v == a1 or v == a2 or v == a3 or v == a4 or v == a5 or v == a6 or v == a7 or v == a8
 	end
 	
 	function argsMT.__index:IsPlayer()
@@ -796,7 +806,7 @@ SlashCmdList["DBMRANGE"] = function(msg)
 		DBM.RangeCheck:Hide()
 	else
 		local r = tonumber(msg)
-		if r and (r == 10 or r == 11 or r == 15 or r == 28 or r == 12 or r == 6 or r == 8 or r == 20) then
+		if r then --and (r == 10 or r == 11 or r == 15 or r == 28 or r == 12 or r == 6 or r == 8 or r == 20) then
 			DBM.RangeCheck:Show(r)
 		else
 			DBM.RangeCheck:Show(10)
@@ -2462,11 +2472,21 @@ end
 -- returns heroic for old instances that do not have a heroic mode (Naxx, Ulduar...)
 function bossModPrototype:GetDifficulty() 
 	local _, instanceType, difficulty, _, _, playerDifficulty, isDynamicInstance = GetInstanceInfo()
+	--if instanceType == "raid" and isDynamicInstance then -- "new" instance (ICC)
+	--	if difficulty == 1 then -- 10 men
+	--		return playerDifficulty == 0 and "normal10" or playerDifficulty == 1 and "heroic10" or "unknown"
+	--	elseif difficulty == 2 then -- 25 men
+	--		return playerDifficulty == 0 and "normal25" or playerDifficulty == 1 and "heroic25" or "unknown"
+	--	end
 	if instanceType == "raid" and isDynamicInstance then -- "new" instance (ICC)
 		if difficulty == 1 then -- 10 men
-			return playerDifficulty == 0 and "normal10" or playerDifficulty == 1 and "heroic10" or "unknown"
+			return playerDifficulty == 0 and "normal10" or "unknown"
 		elseif difficulty == 2 then -- 25 men
-			return playerDifficulty == 0 and "normal25" or playerDifficulty == 1 and "heroic25" or "unknown"
+			return playerDifficulty == 0 and "normal25" or "unknown"
+		elseif difficulty == 3 then -- 10 men hc
+			return playerDifficulty == 1 and "heroic10" or "unknown"
+		elseif difficulty == 4 then -- 25 men hc
+			return playerDifficulty == 1 and "heroic25" or "unknown"
 		end
 	else -- support for "old" instances
 		if GetInstanceDifficulty() == 1 then 
@@ -2668,6 +2688,26 @@ do
 		table.insert(self.announces, obj)
 		return obj
 	end
+
+	function bossModPrototype:NewAnnounceCustom(text, color, icon, optionDefault, optionName)
+		local obj = setmetatable(
+			{
+				text = self.localization.warnings[text],
+				color = {r = 0.00, g = 1.00, b = 0.00},
+				option = optionName or text,
+				mod = self,
+				icon = (type(icon) == "number" and select(3, GetSpellInfo(icon))) or icon,
+			},
+			mt
+		)
+		if optionName == false then
+			obj.option = nil
+		else
+			self:AddBoolOption(optionName or text, optionDefault, "announce")
+		end
+		table.insert(self.announces, obj)
+		return obj
+	end
 	
 	-- new constructor (auto-localized warnings and options, yay!)
 	local function newAnnounce(self, announceType, spellId, color, icon, optionDefault, optionName, castTime, preWarnTime)
@@ -2840,13 +2880,14 @@ do
 		return unschedule(self.Show, self.mod, self, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarning(text, optionDefault, optionName, noSound, runSound)
+	function bossModPrototype:NewSpecialWarning(text, optionDefault, optionName, noSound, runSound, color)		--color added
 		local obj = setmetatable(
 			{
 				text = self.localization.warnings[text], 
 				option = optionName or text,
 				mod = self,
 				sound = not noSound,
+				color = color,
 			},
 			mt
 		)
@@ -2855,13 +2896,18 @@ do
 		else
 			self:AddBoolOption(optionName or text, optionDefault, "announce")		
 		end
+		
 		table.insert(self.specwarns, obj)
 		return obj
 	end
 
-	local function newSpecialWarning(self, announceType, spellId, stacks, optionDefault, optionName, noSound, runSound)
+	local function newSpecialWarning(self, announceType, spellId, stacks, optionDefault, optionName, noSound, runSound, color)
 		spellName = GetSpellInfo(spellId) or "unknown"
-		local text = DBM_CORE_AUTO_SPEC_WARN_TEXTS[announceType]:format(spellName) 
+		local text = DBM_CORE_AUTO_SPEC_WARN_TEXTS[announceType]:format(spellName)
+		local colorPrefix = ("|cff%.2x%.2x%.2x"):format(DBM.Options.SpecialWarningFontColor2.r * 255, DBM.Options.SpecialWarningFontColor2.g * 255, DBM.Options.SpecialWarningFontColor2.b * 255)
+		if color == 2 then	-- colors
+			text = colorPrefix .. text .. "|r"
+		end
 		local obj = setmetatable( -- todo: fix duplicate code
 			{
 				text = text,
@@ -2869,9 +2915,11 @@ do
 				option = optionName or text,
 				mod = self,
 				sound = not noSound,
+				color = color,
 			},
 			mt
 		)
+		
 		if optionName == false then
 			obj.option = nil
 		else
@@ -2999,6 +3047,20 @@ do
 		self:Schedule(3, testWarningEnd)
 		frame.timer = 3
 	end
+	
+	function DBM:ShowTestSpecialWarning2(text)
+		if moving then
+			return
+		end
+		local colorPrefix = ("|cff%.2x%.2x%.2x"):format(DBM.Options.SpecialWarningFontColor2.r * 255, DBM.Options.SpecialWarningFontColor2.g * 255, DBM.Options.SpecialWarningFontColor2.b * 255)
+		font:SetText(colorPrefix .. DBM_CORE_MOVE_SPECIAL_WARNING_TEXT .. "|r")
+		frame:Show()
+		frame:SetAlpha(1)
+		frame:SetFrameStrata("TOOLTIP")
+		self:Unschedule(testWarningEnd)
+		self:Schedule(3, testWarningEnd)
+		frame.timer = 3
+	end
 end
 
 
@@ -3069,6 +3131,12 @@ do
 		local id = self.id..pformat((("\t%s"):rep(select("#", ...))), ...)
 		local bar = DBM.Bars:GetBar(id)
 		return bar and (bar.totalTime - bar.timer) or 0, (bar and bar.totalTime) or 0
+	end
+
+	function timerPrototype:Time(...)
+		local id = self.id..pformat((("\t%s"):rep(select("#", ...))), ...)
+		local bar = DBM.Bars:GetBar(id)
+		return bar.totalTime or 0
 	end
 	
 	function timerPrototype:IsStarted(...)

@@ -10,20 +10,23 @@ L:SetGeneralLocalization{
 }
 
 L:SetMiscLocalization{
-	Charge		= "^%%s glares at (%S+) and lets out",
-	CombatStart	= "Hailing from the deepest, darkest caverns of the Storm Peaks, Gormok the Impaler! Battle on, heroes!",
-	Phase2		= "Steel yourselves, heroes, for the twin terrors, Acidmaw and Dreadscale, enter the arena!",
-	Phase3		= "The air itself freezes with the introduction of our next combatant, Icehowl! Kill or be killed, champions!",
-	Gormok		= "Gormok the Impaler",
-	Acidmaw		= "Acidmaw",
-	Dreadscale	= "Dreadscale",
-	Submerge	= "^%%s buries itself in the earth!",
-	Emerge 		= "^%%s getting out of the ground!",
-	Icehowl		= "Icehowl",
-	YellCharge  = "Charge on me!"
+	Charge			= "^%%s glares at (%S+) and lets out",
+	ArmorPrePot	 	= "Welcome, champions! You have heard the call of the Argent Crusade and you have boldly answered! It is here, in the Crusaders' Coliseum, that you will face your greatest challenges. Those of you who survive the rigors of the coliseum will join the Argent Crusade on its march to Icecrown Citadel.",
+	CombatStart		= "Hailing from the deepest, darkest caverns of the Storm Peaks, Gormok the Impaler! Battle on, heroes!",
+	Phase2			= "Steel yourselves, heroes, for the twin terrors, Acidmaw and Dreadscale, enter the arena!",
+	Phase3			= "The air itself freezes with the introduction of our next combatant, Icehowl! Kill or be killed, champions!",
+	Gormok			= "Gormok the Impaler",
+	Acidmaw			= "Acidmaw",
+	Dreadscale		= "Dreadscale",
+	Submerge		= "^%%s buries itself in the earth!",
+	Emerge 			= "^%%s getting out of the ground!",
+	Icehowl			= "Icehowl",
+	YellCharge  	= "Charge on me!",
+	YellOnImpale	= "Impale >%d< on me!"
 }
 
 L:SetOptionLocalization{
+	TimerArmorPrePotion			= "Show timer for armor pre-potion (first pull)",
 	WarningSnobold				= "Show warning for Snobold Vassal spawns",
 	SpecialWarningImpale3		= "Show special warning for Impale (>=3 stacks)",
 	SpecialWarningAnger3		= "Show special warning for Rising Anger (>=3 stacks)",
@@ -42,21 +45,25 @@ L:SetOptionLocalization{
 	RangeFrame                  = "Show range frame in Phase 2",
 	IcehowlArrow				= "Show DBM arrow when Icehowl is about to charge near you",
 	YellOnCharge				= "Yell on Icehowl charge",
-	PlaySoundBloopers			= "Play sound bloopers"
+	PlaySoundBloopers			= "Play sound bloopers",
+	WarningImpale				= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(67479, GetSpellInfo(67479) or "unknown"),
+	YellOnImpale				= "Yell on $spell:67479 (3+ stacks)"
 }
 
 L:SetTimerLocalization{
 	TimerNextBoss		= "Next boss",
 	TimerCombatStart	= "Combat starts",
 	TimerEmerge			= "Emerge",
-	TimerSubmerge		= "Submerge~"
+	TimerSubmerge		= "Submerge~",
+	TimerArmorPrePotion	= "Pre-potion"
 }
 
 L:SetWarningLocalization{
 	WarningSnobold				= "Snobold Vassal spawned",
+	WarningImpale				= "Impale on >%s< - Stack %d",
 	SpecialWarningImpale3		= "Impale >%d< on you",
 	SpecialWarningAnger3		= "Rising Anger >%d<",
-	SpecialWarningSilence		= "Silence in ~1.5 seconds",
+	SpecialWarningSilence		= "Silence soon",
 	SpecialWarningCharge		= "Charge on you - Run away",
 	SpecialWarningChargeNear	= "Charge near you - Run away",
 	SpecialWarningTranq			= "Frothing Rage - Tranq now"
@@ -85,22 +92,24 @@ L:SetTimerLocalization{
 
 L:SetMiscLocalization{
 	WhisperFlame		= "Legion Flame on you",
-	IncinerateTarget	= "Incinerate Flesh: %s"
+	IncinerateTarget	= "Incinerate Flesh: %s",
+	YellTouch			= "Touch of Jaraxxus on me - MOVE AWAY!"
 }
 
 L:SetOptionLocalization{
 	TimerCombatStart			= "Show time for start of combat",
 	WarnNetherPower				= "Show warning when Lord Jaraxxus gains Nether Power (to dispel/steal)",
 	SpecWarnTouch				= "Show special warning when you are affected by Touch of Jaraxxus",
-	SpecWarnTouchNear			= "Show special warning for Touch of Jaraxxus near you",
+	SpecWarnTouchNear			= "Show special warning for Touch of Jaraxxus near you (heroic only)",
 	SpecWarnNetherPower			= "Show special warning for Nether Power (to dispel/steal)",
 	SpecWarnFelFireball			= "Show special warning for Fel Fireball (to interrupt)",
-	TouchJaraxxusIcon			= "Set icons on Touch of Jaraxxus targets",
+	TouchJaraxxusIcon			= "Set icons on Touch of Jaraxxus targets (heroic only)",
 	IncinerateFleshIcon			= "Set icons on Incinerate Flesh targets",
 	LegionFlameIcon				= "Set icons on Legion Flame targets",
 	LegionFlameWhisper			= "Send whisper to Legion Flame targets",
 	LegionFlameRunSound			= "Play sound on Legion Flame",
-	IncinerateShieldFrame		= "Show boss health with a health bar for Incinerate Flesh"
+	IncinerateShieldFrame		= "Show boss health with a health bar for Incinerate Flesh",
+	YellTouch					= "Yell on $spell:66209"
 }
 
 L:SetMiscLocalization{
@@ -192,7 +201,8 @@ L:SetWarningLocalization{
 L:SetMiscLocalization{
 	YellPull	= "In the name of our dark master. For the Lich King. You. Will. Die.",
 	Fjola		= "Fjola Lightbane",
-	Eydis		= "Eydis Darkbane"
+	Eydis		= "Eydis Darkbane",
+	YellTouch	= "Debuff on Me!"
 }
 
 L:SetOptionLocalization{
@@ -205,7 +215,8 @@ L:SetOptionLocalization{
 	SetIconOnDebuffTarget		= "Set icons on Touch of Light/Darkness debuff targets (heroic)",
 	WarningTouchDebuff			= "Announce Touch of Light/Darkness debuff targets",
 	WarningPoweroftheTwins		= "Announce Power of the Twins targets",
-	SpecWarnPoweroftheTwins		= "Show special warning when you are tanking an empowered Twin"
+	SpecWarnPoweroftheTwins		= "Show special warning when you are tanking an empowered Twin",
+	YellTouch					= "Yell on $spell:67298 / $spell:67283"
 }
 
 -----------------
@@ -259,6 +270,7 @@ L:SetOptionLocalization{
 	RemoveHealthBuffsInP3	= "Remove HP buffs at start of Phase 3", 
 	SetIconsOnPCold         = "Set icons on $spell:68510 targets",
 	AnnouncePColdIcons		= "Announce icons for $spell:68510 targets to raid chat\n(requires announce to be enabled and leader/promoted status)",
-	AnnouncePColdIconsRemoved	= "Also announce when icons are removed for $spell:68510\n(requires above option)"
+	AnnouncePColdIconsRemoved	= "Also announce when icons are removed for $spell:68510\n(requires above option)",
+	SoundWarnShadowStrike = "Play voice counter 3...1 to Shadow Strike cast"
 }
 

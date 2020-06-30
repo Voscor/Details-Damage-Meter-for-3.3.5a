@@ -1,7 +1,7 @@
 ﻿local mod	= DBM:NewMod("Anub'arak_Coliseum", "DBM-Coliseum")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision(("$Revision: 4435 $"):sub(12, -3))
+mod:SetRevision(("$Revision: 4436 $"):sub(12, -3))
 mod:SetCreatureID(34564)  
 
 mod:RegisterCombat("yell", L.YellPull)
@@ -19,6 +19,7 @@ mod:SetUsedIcons(3, 4, 5, 6, 7, 8)
 
 
 mod:AddBoolOption("RemoveHealthBuffsInP3", false)
+mod:AddBoolOption("SoundWarnShadowStrike", false)
 
 -- Adds
 local warnAdds				= mod:NewAnnounce("warnAdds", 3, 45419)
@@ -29,7 +30,7 @@ local Burrowed				= false
 local warnPursue			= mod:NewTargetAnnounce(67574, 4)
 local specWarnPursue		= mod:NewSpecialWarning("SpecWarnPursue")
 local warnHoP				= mod:NewTargetAnnounce(10278, 2, nil, true)--Heroic strat revolves around kiting pursue and using Hand of Protection.
-local timerHoP				= mod:NewBuffActiveTimer(10, 10278, nil, true)--So we will track bops to make this easier.
+local timerHoP				= mod:NewTargetTimer(10, 10278, nil, true)--So we will track bops to make this easier.
 
 mod:AddBoolOption("PlaySoundOnPursue")
 mod:AddBoolOption("PursueIcon")
@@ -82,6 +83,11 @@ function mod:OnCombatStart(delay)
 	if mod:IsDifficulty("heroic10") or mod:IsDifficulty("heroic25") then
 		timerShadowStrike:Start()
 		preWarnShadowStrike:Schedule(25-delay)
+		if self.Options.SoundWarnShadowStrike then
+			self:ScheduleMethod(27, "ToShadowStrike3")
+			self:ScheduleMethod(28, "ToShadowStrike2")
+			self:ScheduleMethod(29, "ToShadowStrike1")
+		end
 		self:ScheduleMethod(30-delay, "ShadowStrike")
 	end
 	-- Enrage
@@ -109,7 +115,25 @@ function mod:ShadowStrike()
 		preWarnShadowStrike:Schedule(25)
 		self:UnscheduleMethod("ShadowStrike")
 		self:ScheduleMethod(30, "ShadowStrike")
+		if self.Options.SoundWarnShadowStrike then
+			self:ScheduleMethod(27, "ToShadowStrike3")
+			self:ScheduleMethod(28, "ToShadowStrike2")
+			self:ScheduleMethod(29, "ToShadowStrike1")
+		end
 	end
+end
+
+-- SOUND FUNCTIONS
+function mod:ToShadowStrike3()
+	PlaySoundFile("Interface\\AddOns\\DBM-Core\\sounds\\3.mp3", "Master")
+end
+
+function mod:ToShadowStrike2()
+	PlaySoundFile("Interface\\AddOns\\DBM-Core\\sounds\\2.mp3", "Master")
+end
+
+function mod:ToShadowStrike1()
+	PlaySoundFile("Interface\\AddOns\\DBM-Core\\sounds\\1.mp3", "Master")
 end
 
 local PColdTargets = {}
@@ -159,9 +183,6 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif args:IsSpellID(66012) then							-- Freezing Slash
 		warnFreezingSlash:Show(args.destName)
 		timerFreezingSlashCD:Start()
-	elseif args:IsSpellID(10278) and self:IsInCombat() then		-- Hand of Protection
-		warnHoP:Show(args.destName)
-		timerHoP:Start(args.destName)
 	end
 end
 
@@ -213,6 +234,11 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		warnSubmerge:Show()
 		warnEmergeSoon:Schedule(50)
 		timerEmerge:Start()
+		if self.Options.SoundWarnShadowStrike then
+			self:UnscheduleMethod("ToShadowStrike1")
+			self:UnscheduleMethod("ToShadowStrike2")
+			self:UnscheduleMethod("ToShadowStrike3")
+		end
 		
 	elseif msg and msg:find(L.Emerge) then
 		Burrowed = false

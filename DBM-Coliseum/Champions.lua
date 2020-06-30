@@ -5,7 +5,7 @@ mod:SetRevision(("$Revision: 3726 $"):sub(12, -3))
 mod:SetCreatureID(34458, 34451, 34459, 34448, 34449, 34445, 34456, 34447, 34441, 34454, 34444, 34455, 34450, 34453, 34461, 34460, 34469, 34467, 34468, 34471, 34465, 34466, 34473, 34472, 34470, 34463, 34474, 34475)
 
 mod:RegisterCombat("combat")
-mod:RegisterKill("yell", L.YellKill)
+--mod:RegisterKill("yell", L.YellKill)
 
 
 mod:RegisterEvents(
@@ -17,8 +17,8 @@ mod:RegisterEvents(
 )
 
 
-if UnitFactionGroup("player") == "Alliance" then
-	--mod:RegisterKill("yell", L.AllianceVictory)
+--[[if UnitFactionGroup("player") == "Alliance" then
+	mod:RegisterKill("yell", L.AllianceVictory)
 	mod:SetBossHealthInfo(
 	-- Horde
 		34458, L.Gorgrim,
@@ -37,7 +37,7 @@ if UnitFactionGroup("player") == "Alliance" then
 		34453, L.Narrhok
 	)
 else
-	--mod:RegisterKill("yell", L.HordeVictory)
+	mod:RegisterKill("yell", L.HordeVictory)
 	mod:SetBossHealthInfo(
 	-- Alliance
 		34461, L.Tyrius,
@@ -55,7 +55,7 @@ else
 		34474, L.Serissa,
 		34475, L.Shocuul
 	)
-end
+end]]--
 
 local isDispeller = select(2, UnitClass("player")) == "WARRIOR"
 				or select(2, UnitClass("player")) == "PRIEST"
