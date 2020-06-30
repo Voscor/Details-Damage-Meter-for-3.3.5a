@@ -22,7 +22,7 @@ mod:RegisterEvents(
 local timerArmorPrePotion 	= mod:NewTimer(35, "TimerArmorPrePotion", 12727)
 -- Gormok the Impaler
 local warnImpaleOn			= mod:NewTargetAnnounce(67478, 2, nil, mod:IsTank() or mod:IsHealer())
-local announceImpale		= mod:NewAnnounce("WarningImpale", 3, 65108, mod:IsHealer() or mod:IsTank())
+local announceImpale		= mod:NewAnnounce("WarningImpale", 3, 67478, mod:IsHealer() or mod:IsTank())
 local warnFireBomb			= mod:NewSpellAnnounce(66317, 3, nil, false)
 local WarningSnobold		= mod:NewAnnounce("WarningSnobold", 4)
 local specWarnImpale3		= mod:NewSpecialWarning("SpecialWarningImpale3")
@@ -31,6 +31,7 @@ local specWarnFireBomb		= mod:NewSpecialWarningMove(66317)
 local specWarnSilence		= mod:NewSpecialWarning("SpecialWarningSilence")
 local timerDisarm			= mod:NewBuffActiveTimer(10, 65935, nil, false)
 local timerDismantle		= mod:NewBuffActiveTimer(10, 51722, nil, false)
+local timerImpale			= mod:NewTargetTimer(45, 67478, nil, mod:IsTank() or mod:IsHealer())
 local timerNextStompCD		= mod:NewCDTimer(20, 66330) -- 15 sec. after pull, 20-25 sec. every next
 local timerNextImpale		= mod:NewNextTimer(9.5, 67477, nil, mod:IsTank() or mod:IsHealer()) -- 9-10 sec. CD (after pull and every next)
 local timerRisingAngerCD    = mod:NewCDTimer(20, 66636) -- 16-24 sec. CD (after pull and every next)
@@ -89,6 +90,7 @@ local DreadscaleDead	= false
 local AcidmawDead	= false
 local messageCounter = 0
 local randomNumber = 1
+local impaleCount = 0
 
 local function updateHealthFrame(phase)
 	if phases[phase] then
@@ -106,6 +108,10 @@ local function updateHealthFrame(phase)
 	end
 end
 
+local function AnnounceImpaleStacks(stacks)
+	SendChatMessage("Impale >"..stacks.."< on me!", "SAY")
+end
+
 function mod:OnCombatStart(delay)
 	DBM:FireCustomEvent("DBM_EncounterStart", 629, "Beasts of Northrend")
 	table.wipe(bileTargets)
@@ -113,6 +119,7 @@ function mod:OnCombatStart(delay)
 	table.wipe(phases)
 	messageCounter = 0	-- help variable to register Submerge and Emerge
 	burnIcon = 8
+	impaleCount = 0
 	DreadscaleActive = true
 	DreadscaleDead = false
 	AcidmawDead = false
@@ -200,6 +207,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	if args:IsSpellID(67477, 66331, 67478, 67479) then		-- Impale
 		timerNextImpale:Start()
 		warnImpaleOn:Show(args.destName)
+		timerImpale:Start(args.destName)
 	elseif args:IsSpellID(66636) then						-- Rising Anger
 		WarningSnobold:Show()
 		timerRisingAngerCD:Show()
@@ -271,11 +279,11 @@ function mod:SPELL_AURA_APPLIED_DOSE(args)
 		warnImpaleOn:Show(args.destName)
 		local amount = args.amount or 1
 		announceImpale:Show(args.destName, amount)
-		if args.amount >= 3 then 
+		if args.amount >= 4 then 
 			if args:IsPlayer() then
 				specWarnImpale3:Show(args.amount)
 				if self.Options.YellOnImpale then
-					SendChatMessage(L.YellOnImpale, "SAY")
+					AnnounceImpaleStacks(args.amount)
 				end
 			end
 		end

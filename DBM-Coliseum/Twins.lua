@@ -41,6 +41,7 @@ mod:AddBoolOption("SpecialWarnOnDebuff", true, "announce")
 mod:AddBoolOption("SetIconOnDebuffTarget", true)
 mod:AddBoolOption("HealthFrame", true)
 mod:AddBoolOption("YellTouch", true)
+mod:AddBoolOption("AnnounceDebuff", true, "announce")
 
 
 local debuffTargets					= {}
@@ -177,8 +178,11 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:SetIcon(args.destName, debuffIcon, 15)
 			debuffIcon = debuffIcon - 1
 		end
-		if self.Options.YellTouch then
+		if args:IsPlayer() and self.Options.YellTouch then
 			SendChatMessage(L.YellTouch, "SAY")
+		end
+		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 then
+			SendChatMessage(..args.destName.." - Change do DARK COLOR")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")
@@ -192,8 +196,11 @@ function mod:SPELL_AURA_APPLIED(args)
 			self:SetIcon(args.destName, debuffIcon)
 			debuffIcon = debuffIcon - 1
 		end
-		if self.Options.YellTouch then
+		if args:IsPlayer() and self.Options.YellTouch then
 			SendChatMessage(L.YellTouch, "SAY")
+		end
+		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 then
+			SendChatMessage(..args.destName.." - Change do WHITE COLOR")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")

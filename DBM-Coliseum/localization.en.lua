@@ -22,7 +22,7 @@ L:SetMiscLocalization{
 	Emerge 			= "^%%s getting out of the ground!",
 	Icehowl			= "Icehowl",
 	YellCharge  	= "Charge on me!",
-	YellOnImpale	= "Impale >%d< on me!"
+	YellOnImpale	= "Impale >%%d< on me!"
 }
 
 L:SetOptionLocalization{
@@ -47,7 +47,7 @@ L:SetOptionLocalization{
 	YellOnCharge				= "Yell on Icehowl charge",
 	PlaySoundBloopers			= "Play sound bloopers",
 	WarningImpale				= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(67479, GetSpellInfo(67479) or "unknown"),
-	YellOnImpale				= "Yell on $spell:67479 (3+ stacks)"
+	YellOnImpale				= "Yell on $spell:67479 (4+ stacks)"
 }
 
 L:SetTimerLocalization{

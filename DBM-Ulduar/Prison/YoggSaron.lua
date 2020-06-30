@@ -104,6 +104,10 @@ function mod:warnBrainLink()
 	brainLinkIcon = 7
 end
 
+function mod:getBrainHealth()
+	AnnounceHealth(brainHP)
+end
+
 local function AnnounceHealth(health)
 	SendChatMessage(L.YellBrain:format(health), "RAID_WARNING")
 end
@@ -117,7 +121,7 @@ function mod:SPELL_CAST_START(args)
 		specWarnBrainPortalSoon:Schedule(70)
 		specWarnMadnessOutNow:Schedule(55)
 		if self.Options.YellBrain and DBM:GetRaidRank() >= 1 then
-			getBrainHealth:Schedule(58)
+			self:ScheduleMethod(58, "getBrainHealth")
 		end
 			
 	elseif args:IsSpellID(64189) then		--Deafening Roar
@@ -245,9 +249,8 @@ function mod:UNIT_HEALTH(uId)
 	if phase == 1 and uId == "target" and self:GetUnitCreatureId(uId) == 33136 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.3 and not targetWarningsShown[UnitGUID(uId)] then
 		targetWarningsShown[UnitGUID(uId)] = true
 		specWarnGuardianLow:Show()
-	elseif phase == 2 and uId == ("target" or "focus") and self:GetUnitCreatureId(uId) == 33136 then
+	elseif phase == 2 and uId == ("target" or "focus") and self:GetUnitCreatureId(uId) == 33136 and DBM:GetRaidRank() >= 1 then
 		brainHP = UnitHealth(uId) / UnitHealthMax(uId)
-		AnnounceHealth(brainHP)	
 	end
 end
 
