@@ -14,6 +14,9 @@ mod:RegisterEvents(
 	"CHAT_MSG_RAID_BOSS_EMOTE",
 	"SPELL_CAST_SUCCESS"
 )
+--big todo probably won't though: Ice Nova handling (frosthold-exclusive skill)
+--todo: test if Stomp displays properly
+--Stomp ability handling already present on Thaddius - duplicating it here makes it so it is executed twice since they both use the same spell ID
 
 local warnDrainLifeNow	= mod:NewSpellAnnounce(28542, 2)
 local warnDrainLifeSoon	= mod:NewSoonAnnounce(28542, 1)
@@ -22,6 +25,7 @@ local warnAirPhaseNow	= mod:NewAnnounce("WarningAirPhaseNow", 4, "Interface\\Add
 local warnLanded		= mod:NewAnnounce("WarningLanded", 4, "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp")
 
 local warnDeepBreath	= mod:NewSpecialWarning("WarningDeepBreath")
+local warnStomp			= mod:NewSpellAnnounce(45185, 4)
 
 mod:AddBoolOption("WarningIceblock", true, "announce")
 
@@ -29,7 +33,8 @@ local timerDrainLife	= mod:NewCDTimer(22, 28542)
 local timerAirPhase		= mod:NewTimer(66, "TimerAir", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendUnBurrow.blp")
 local timerLanding		= mod:NewTimer(28.5, "TimerLanding", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp")
 local timerIceBlast		= mod:NewTimer(9.3, "TimerIceBlast", 15876)
-
+local enrageTimer		= mod:NewBerserkTimer(600)
+local timerStomp		= mod:NewCDTimer(10, 45185)
 local noTargetTime = 0
 local isFlying = false
 
@@ -39,15 +44,20 @@ function mod:OnCombatStart(delay)
 	isFlying = false
 	warnAirPhaseSoon:Schedule(38.5 - delay)
 	timerAirPhase:Start(48.5 - delay)
+	enrageTimer:Start(-delay)
 end
 
 function mod:OnCombatEnd(wipe)
 	DBM:FireCustomEvent("DBM_EncounterEnd", 702, "Sapphiron", wipe)
 end
 
+
 function mod:SPELL_AURA_APPLIED(args)
 	if args:IsSpellID(28522) and args:IsPlayer() and self.Options.WarningIceblock then
 		SendChatMessage(L.WarningYellIceblock, "YELL")
+	--elseif args:IsSpellID(45185) then
+	--	warnStomp:Show()
+	--	timerStomp:Start()
 	end
 end
 

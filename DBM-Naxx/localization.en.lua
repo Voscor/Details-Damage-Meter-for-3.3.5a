@@ -109,7 +109,10 @@ L:SetGeneralLocalization({
 
 L:SetWarningLocalization({
 	WarningTeleportNow	= "Teleported",
-	WarningTeleportSoon	= "Teleport in %d seconds"
+	WarningTeleportSoon	= "Teleport in %d seconds",
+	--added
+	WarningMortalWound	= "%s on >%s< (%d)"
+	--
 })
 
 L:SetTimerLocalization({
@@ -119,7 +122,10 @@ L:SetTimerLocalization({
 L:SetOptionLocalization({
 	WarningTeleportNow	= "Show warning for Teleport",
 	WarningTeleportSoon	= "Show pre-warning for Teleport",
-	TimerTeleport		= "Show timer for Teleport"
+	TimerTeleport		= "Show timer for Teleport",
+	--added
+	WarningMortalWound	= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(25646, GetSpellInfo(25646) or "unknown")
+	--
 })
 
 ---------------
@@ -139,7 +145,7 @@ L:SetWarningLocalization({
 L:SetOptionLocalization({
 	WarningHealSoon		= "Show pre-warning for 3-second healing window",
 	WarningHealNow		= "Show warning for 3-second healing window",
-	SporeDamageAlert	= "Send whisper to and announce to raid players who damage spores\n(requires announce to be enabled and leader/promoted status)"
+	SporeDamageAlert	= "Send whisper to and announce to raid players who damage spores\n(requires announce and raid assist)"
 })
 
 -----------------
@@ -152,7 +158,7 @@ L:SetGeneralLocalization({
 })
 
 L:SetOptionLocalization({
-	WarningHateful	= "Post Hateful Strike targets to raid chat\n(requires announce to be enabled and leader/promoted status)"
+	WarningHateful	= "Post Hateful Strike targets to raid chat\n(requires announce and raid assist)"
 })
 
 L:SetMiscLocalization({
@@ -191,6 +197,23 @@ L:SetGeneralLocalization({
 	name = "Gluth"
 })
 
+L:SetTimerLocalization({
+	TimerEnraged	= "Enraged!"
+})
+
+--added
+L:SetWarningLocalization({
+	WarnMortalWound	= "%s on >%s< (%d)"
+})
+--
+
+L:SetOptionLocalization({
+	TimerEnraged		= "Show timer for Enrage's duration",
+	--added
+	WarnMortalWound		= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(25646, GetSpellInfo(25646) or "unknown")
+	--
+})
+
 ----------------
 --  Thaddius  --
 ----------------
@@ -201,26 +224,31 @@ L:SetGeneralLocalization({
 })
 
 L:SetMiscLocalization({
-	Yell	= "Stalagg crush you!",
-	Emote	= "%s overloads!",
-	Emote2	= "Tesla Coil overloads!",
-	Boss1	= "Feugen",
-	Boss2	= "Stalagg",
-	Charge1 = "negative",
-	Charge2 = "positive"
+	Yell		= "Stalagg crush you!",
+	YellThad1	= "Kill...",
+	YellThad2	= "Break... you!",
+	YellThad3	= "Eat... your... bones...",
+	YellF		= "No... more... Feugen...",
+	YellS		= "Master save me...",
+	Emote		= "%s overloads!",
+	Emote2		= "Tesla Coil overloads!",
+	Boss1		= "Feugen",
+	Boss2		= "Stalagg",
+	Charge1 	= "negative",
+	Charge2 	= "positive"
 })
 
 L:SetOptionLocalization({
 	WarningChargeChanged	= "Show special warning when your polarity changed",
 	WarningChargeNotChanged	= "Show special warning when your polarity did not change",
 	ArrowsEnabled			= "Show arrows (normal \"2 camp\" strategy)",
-	ArrowsRightLeft			= "Show left/right arrows for the \"4 camp\" strategy (show left arrow if polarity changed, right if not)",
-	ArrowsInverse			= "Inverse \"4 camp\" strategy (show right arrow if polarity changed, left if not)"
+	ArrowsRightLeft			= "Show left/right arrows for the \"4 camp\" strategy \n(show left arrow if polarity changed, right if not)",
+	ArrowsInverse			= "Inverse \"4 camp\" strategy \n(show right arrow if polarity changed, left if not)"
 })
 
 L:SetWarningLocalization({
 	WarningChargeChanged	= "Polarity changed to %s",
-	WarningChargeNotChanged	= "Polarity did not change"
+	WarningChargeNotChanged	= "Polarity did not change",
 })
 
 L:SetOptionCatLocalization({
@@ -263,6 +291,8 @@ L:SetGeneralLocalization({
 L:SetOptionLocalization({
 	TimerWave			= "Show timer for next wave",
 	TimerPhase2			= "Show timer for Phase 2",
+	TimerGate			= "Show timer for gate opening",
+	WarningGate			= "Show special warning for gate opening",
 	WarningWaveSoon		= "Show pre-warning for wave",
 	WarningWaveSpawned	= "Show warning for wave spawned",
 	WarningRiderDown	= "Show warning when an Unrelenting Rider dies",
@@ -271,7 +301,8 @@ L:SetOptionLocalization({
 
 L:SetTimerLocalization({
 	TimerWave	= "Wave %d",
-	TimerPhase2	= "Phase 2"
+	TimerPhase2	= "Phase 2",
+	TimerGate	= "Gate Opens"
 })
 
 L:SetWarningLocalization({
@@ -279,7 +310,8 @@ L:SetWarningLocalization({
 	WarningWaveSpawned	= "Wave %d: %s spawned",
 	WarningRiderDown	= "Rider down",
 	WarningKnightDown	= "Knight down",
-	WarningPhase2		= "Phase 2"
+	WarningPhase2		= "Phase 2",
+	WarningGate			= "GATE!"
 })
 
 L:SetMiscLocalization({
@@ -376,16 +408,24 @@ L:SetOptionLocalization({
 	specwarnP2Soon	= "Show special warning 10 seconds before Kel'Thuzad engages",
 	warnAddsSoon	= "Show pre-warning for Guardians of Icecrown",
 	BlastAlarm		= "Play custom siren sound when Frost Blast is being cast",
-	ShowRange		= "Show range frame when Phase 2 starts"
+	ShowRange		= "Show range frame when Phase 2 starts",
+	MindControl		= "Yell when Mind Controlled",
+	YellOnFissure	= "Yell on $spell:27810"
 })
 
 L:SetMiscLocalization({
-	Yell = "Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!"
+	Yell = "Minions, servants, soldiers of the cold dark! Obey the call of Kel'Thuzad!",
+	Yell2 = "Pray for mercy!",
+	Yell3 = "Scream your dying breath!",
+	Yell4 = "The end is upon you",
+	KelThuzad = "Kel'Thuzad",
+	YellFissure = "Fissure on me!"
 })
 
 L:SetWarningLocalization({
-	specwarnP2Soon	= "Kel'Thuzad engages in 10 Seconds",
-	warnAddsSoon	= "Guardians of Icecrown incoming soon"
+	specwarnP2Soon		= "Kel'Thuzad engages in 10 Seconds",
+	warnAddsSoon		= "Guardians of Icecrown incoming soon",
+	WarningMindControl 	= "Mind controlled! CC me!"
 })
 
 L:SetTimerLocalization({

@@ -25,7 +25,7 @@ local specWarnSurge		= mod:NewSpecialWarningYou(60936)
 local enrageTimer		= mod:NewBerserkTimer(615)
 local timerSpark		= mod:NewTimer(30, "TimerSpark", 59381)
 local timerVortex		= mod:NewCastTimer(11, 56105)
-local timerVortexCD		= mod:NewNextTimer(60, 56105)
+local timerVortexCD		= mod:NewNextTimer(60, 56105) --80sec in 10m
 local timerBreath		= mod:NewTimer(59, "TimerBreath", 60072)
 local timerAchieve      = mod:NewAchievementTimer(360, 1875, "TimerSpeedKill")
 
@@ -43,6 +43,7 @@ function mod:OnCombatStart(delay)
 	enrageTimer:Start(-delay)
 	timerAchieve:Start(-delay)
 	table.wipe(guids)
+	timerVortexCD:Start(40-delay) --10man timer
 end
 
 function mod:OnCombatEnd(wipe)
@@ -98,6 +99,12 @@ function mod:SPELL_AURA_APPLIED(args)
 			if target == UnitName("player") then
 				specWarnSurge:Show()
 			end
+		end
+	elseif args:IsSpellID(56263) then
+		if mod:IsDifficulty("heroic25") then
+			timerVortexCD:Start()
+		else
+			timerVortexCD:Start(80)
 		end
 	end
 end

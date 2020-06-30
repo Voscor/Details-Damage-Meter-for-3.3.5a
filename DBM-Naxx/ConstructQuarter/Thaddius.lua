@@ -12,19 +12,27 @@ mod:EnableModel()
 mod:RegisterEvents(
 	"SPELL_CAST_START",
 	"CHAT_MSG_RAID_BOSS_EMOTE",
-	"UNIT_AURA"
+	"CHAT_MSG_MONSTER_YELL",
+	"UNIT_AURA",
+	"SPELL_AURA_APPLIED"
 )
-
+--TODO: Should work - if not = revert Thaddius's yell trigger
+--Thaddius yells: Kill...--No Blizzlike Thaddius emotes to start his phase
+--Thaddius tells: Eat...your...bones...--No Blizzlike Thaddius emotes to start his phase
+--Thaddius yells: Break...you!--No Blizzlike Thaddius emote to start his phase
 local warnShiftCasting		= mod:NewCastAnnounce(28089, 3)
 local warnChargeChanged		= mod:NewSpecialWarning("WarningChargeChanged")
 local warnChargeNotChanged	= mod:NewSpecialWarning("WarningChargeNotChanged", false)
 local warnThrow				= mod:NewSpellAnnounce(28338, 2)
 local warnThrowSoon			= mod:NewSoonAnnounce(28338, 1)
+local warnStomp				= mod:NewSpellAnnounce(45185, 4)
 
-local enrageTimer			= mod:NewBerserkTimer(365)
-local timerNextShift		= mod:NewNextTimer(30, 28089)
+
+local enrageTimer			= mod:NewBerserkTimer(480)
+local timerNextShift		= mod:NewNextTimer(20, 28089)
 local timerShiftCast		= mod:NewCastTimer(3, 28089)
-local timerThrow			= mod:NewNextTimer(20.6, 28338)
+local timerThrow			= mod:NewNextTimer(27.2, 28338)
+local timerStomp			= mod:NewCDTimer(10, 45185) 
 
 mod:AddBoolOption("ArrowsEnabled", false, "Arrows")
 mod:AddBoolOption("ArrowsRightLeft", false, "Arrows")
@@ -45,9 +53,9 @@ function mod:OnCombatStart(delay)
 	phase2 = false
 	currentCharge = nil
 	down = 0
-	self:ScheduleMethod(20.6 - delay, "TankThrow")
+	self:ScheduleMethod(27.2 - delay, "TankThrow")
 	timerThrow:Start(-delay)
-	warnThrowSoon:Schedule(17.6 - delay)
+	warnThrowSoon:Schedule(21.6 - delay)
 end
 
 function mod:OnCombatEnd(wipe)
@@ -106,11 +114,23 @@ function mod:UNIT_AURA(elapsed)
 		currentCharge = charge
 	end
 end
-
-function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
-	if msg == L.Emote or msg == L.Emote2 then
+--OLD BERSERK--DOESN'T WORK ON FROSTHOLD
+--function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
+--	if msg == L.Emote or msg == L.Emote2 then
+--		down = down + 1
+--		if down >= 2 then
+--			self:UnscheduleMethod("TankThrow")
+--			timerThrow:Cancel()
+--			warnThrowSoon:Cancel()
+--			DBM.BossHealth:Hide()
+--			enrageTimer:Start(0) --Testing 0 argument cuz previous commands in this function work (i think)
+--		end
+--	end
+--end
+function mod:CHAT_MSG_MONSTER_YELL(msg, sender)
+	if msg == L.YellThad1 or msg == L.YellThad2 or msg == YellThad3 then
 		down = down + 1
-		if down >= 2 then
+		if down >= 1 then
 			self:UnscheduleMethod("TankThrow")
 			timerThrow:Cancel()
 			warnThrowSoon:Cancel()
@@ -119,6 +139,26 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 		end
 	end
 end
+--^Maybe works, if not - change with the one below and try
+--function mod:CHAT_MSG_MONSTER_YELL(msg, sender)
+--	if msg == L.YellS or msg == L.YellF
+--		down = down + 1
+--		if down >= 2 then
+--			self:UnscheduleMethod("TankThrow")
+--			timerThrow:Cancel()
+--			warnThrowSoon:Cancel()
+--			DBM.BossHealth:Hide()
+--			enrageTimer:Start()
+--		end
+--	end
+--end
+----
+function mod:SPELL_AURA_APPLIED(args)
+	if args:IsSpellID(45185) then
+		warnStomp:Show()
+		timerStomp:Start()
+	end	
+end
 
 function mod:TankThrow()
 	if not self:IsInCombat() or phase2 then
@@ -126,8 +166,8 @@ function mod:TankThrow()
 		return
 	end
 	timerThrow:Start()
-	warnThrowSoon:Schedule(17.6)
-	self:ScheduleMethod(20.6, "TankThrow")
+	warnThrowSoon:Schedule(21.6)
+	self:ScheduleMethod(27.2, "TankThrow")
 end
 
 local function arrowOnUpdate(self, elapsed)
@@ -143,7 +183,7 @@ local function arrowOnShow(self)
 	self.elapsed = 0
 	self:SetAlpha(1)
 end
-
+--noone probably uses these anyway
 local arrowLeft = CreateFrame("Frame", nil, UIParent)
 arrowLeft:Hide()
 local arrowLeftTexture = arrowLeft:CreateTexture(nil, "BACKGROUND")
