@@ -278,7 +278,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnCyclone:Show(args.destName)
 	elseif args:IsSpellID(65857) then								-- Entangling Roots
 		warnEntanglingRoots:Show(args.destName)
-	elseif args:IsSpellID(66086, 67974, 67975, 67976) and GetTime - tranqSpam > 1 then			-- Tranquility
+	elseif args:IsSpellID(66086, 67974, 67975, 67976) and GetTime() - tranqSpam > 1 then			-- Tranquility
 		tranqSpam = GetTime()
 		warnTranquility:Show()
 		specWarnTranquility:Show()
