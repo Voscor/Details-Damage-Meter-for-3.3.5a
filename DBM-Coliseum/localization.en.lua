@@ -22,7 +22,7 @@ L:SetMiscLocalization{
 	Emerge 			= "^%%s getting out of the ground!",
 	Icehowl			= "Icehowl",
 	YellCharge  	= "Charge on me!",
-	YellOnImpale	= "Impale >%%d< on me!"
+	YellSlimePool	= "Slime Pool - MOVE BOSS"
 }
 
 L:SetOptionLocalization{
@@ -47,7 +47,8 @@ L:SetOptionLocalization{
 	YellOnCharge				= "Yell on Icehowl charge",
 	PlaySoundBloopers			= "Play sound bloopers",
 	WarningImpale				= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(67479, GetSpellInfo(67479) or "unknown"),
-	YellOnImpale				= "Yell on $spell:67479 (4+ stacks)"
+	YellOnImpale				= "Yell on $spell:67479 (4+ stacks)",
+	AnnounceSlimePool			= "Announce $spell:67640 spawn (Frosthold workaround)"
 }
 
 L:SetTimerLocalization{
@@ -216,7 +217,8 @@ L:SetOptionLocalization{
 	WarningTouchDebuff			= "Announce Touch of Light/Darkness debuff targets",
 	WarningPoweroftheTwins		= "Announce Power of the Twins targets",
 	SpecWarnPoweroftheTwins		= "Show special warning when you are tanking an empowered Twin",
-	YellTouch					= "Yell on $spell:67298 / $spell:67283"
+	YellTouch					= "Yell on $spell:67298 / $spell:67283",
+	AnnounceDebuff				= "Yell out $spell:67298 / $spell:67283 targets \n(requires assist and announce to be enabled)"
 }
 
 -----------------

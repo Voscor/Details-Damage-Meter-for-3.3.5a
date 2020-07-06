@@ -181,8 +181,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		if args:IsPlayer() and self.Options.YellTouch then
 			SendChatMessage(L.YellTouch, "SAY")
 		end
-		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 then
-			SendChatMessage(..args.destName.." - Change do DARK COLOR")
+		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 and not args:IsPlayer() then
+			local ann = args.destName
+			SendChatMessage(""..ann.." - Change to DARK COLOR", "YELL")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")
@@ -199,8 +200,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		if args:IsPlayer() and self.Options.YellTouch then
 			SendChatMessage(L.YellTouch, "SAY")
 		end
-		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 then
-			SendChatMessage(..args.destName.." - Change do WHITE COLOR")
+		if self.Options.AnnounceDebuff and DBM:GetRaidRank() >= 1 and not args:IsPlayer() then
+			local ann = args.destName
+			SendChatMessage(""..ann.." - Change to WHITE COLOR", "YELL")
 		end
 		debuffTargets[#debuffTargets + 1] = args.destName
 		self:UnscheduleMethod("warnDebuff")

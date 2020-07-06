@@ -36,7 +36,7 @@ local timerNextStompCD		= mod:NewCDTimer(20, 66330) -- 15 sec. after pull, 20-25
 local timerNextImpale		= mod:NewNextTimer(9.5, 67477, nil, mod:IsTank() or mod:IsHealer()) -- 9-10 sec. CD (after pull and every next)
 local timerRisingAngerCD    = mod:NewCDTimer(20, 66636) -- 16-24 sec. CD (after pull and every next)
 -- Acidmaw & Dreadscale
-local warnSlimePool			= mod:NewSpellAnnounce(67643, 2, nil, mod:IsMelee())
+--local warnSlimePool			= mod:NewSpellAnnounce(67643, 2, nil, mod:IsMelee())
 local warnToxin				= mod:NewTargetAnnounce(66823, 3)
 local warnBile				= mod:NewTargetAnnounce(66869, 3)
 local warnEnrageWorm		= mod:NewSpellAnnounce(68335, 3)
@@ -46,7 +46,7 @@ local specWarnBile			= mod:NewSpecialWarningYou(66869)
 local timerSubmergeCD		= mod:NewTimer(45, "TimerSubmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp") -- 45-50 sec.
 local timerEmerge			= mod:NewTimer(8.5, "TimerEmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendUnBurrow.blp")
 local timerSweepCD			= mod:NewCDTimer(15, 66794, nil, mod:IsMelee()) -- 15-30 sec. CD
-local timerSlimePoolCD		= mod:NewCDTimer(30, 66883, nil, mod:IsMelee()) -- first after 15 sec., 30 sec. CD
+--local timerSlimePoolCD		= mod:NewCDTimer(30, 66883, nil, mod:IsMelee()) -- first after 15 sec., 30 sec. CD
 local timerAcidicSpewCD		= mod:NewCDTimer(15, 66819) -- 15-30 sec. CD 
 local timerMoltenSpewCD		= mod:NewCDTimer(15, 66820) -- 15-30 sec. CD
 local timerParalyticSpray	= mod:NewNextTimer(20, 66901) -- 20 sec. after pull, 20 sec. every next 
@@ -79,6 +79,7 @@ mod:AddBoolOption("IcehowlArrow")
 mod:AddBoolOption("YellOnCharge", true, "announce")
 mod:AddBoolOption("PlaySoundBloopers", true)
 mod:AddBoolOption("YellOnImpale", true, "announce")
+mod:AddBoolOption("AnnounceSlimePool", true, "announce")
 
 
 local bileTargets			= {}
@@ -91,6 +92,7 @@ local AcidmawDead	= false
 local messageCounter = 0
 local randomNumber = 1
 local impaleCount = 0
+local poolSpam = 0
 
 local function updateHealthFrame(phase)
 	if phases[phase] then
@@ -180,7 +182,7 @@ end
 function mod:WormsSubmerge()
 	timerEmerge:Show()
 	timerSweepCD:Cancel()
-	timerSlimePoolCD:Cancel()
+	--timerSlimePoolCD:Cancel()
 	timerMoltenSpewCD:Cancel()
 	timerParalyticSpray:Cancel()
 	timerBurningBite:Cancel()
@@ -206,7 +208,7 @@ function mod:SPELL_AURA_APPLIED(args)
 	-- Gormok the Impaler
 	if args:IsSpellID(67477, 66331, 67478, 67479) then		-- Impale
 		timerNextImpale:Start()
-		warnImpaleOn:Show(args.destName)
+		--warnImpaleOn:Show(args.destName)
 		timerImpale:Start(args.destName)
 	elseif args:IsSpellID(66636) then						-- Rising Anger
 		WarningSnobold:Show()
@@ -276,7 +278,7 @@ end
 function mod:SPELL_AURA_APPLIED_DOSE(args)
 	if args:IsSpellID(67477, 66331, 67478, 67479) then		-- Impale
 		timerNextImpale:Start()
-		warnImpaleOn:Show(args.destName)
+		--warnImpaleOn:Show(args.destName)
 		local amount = args.amount or 1
 		announceImpale:Show(args.destName, amount)
 		if args.amount >= 4 then 
@@ -328,10 +330,11 @@ end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	-- Acidmaw & Dreadscale
-	if args:IsSpellID(67641, 66883, 67642, 67643) then		-- Slime Pool Cloud Spawn
+	--[[if args:IsSpellID(67641, 66883, 67642, 67643) then		-- Slime Pool Cloud Spawn - doesn't work on Frosthold
 		warnSlimePool:Show()
 		timerSlimePoolCD:Show()
-	elseif args:IsSpellID(66824, 67612, 67613, 67614) then	-- Paralytic Bite
+	else--]]
+	if args:IsSpellID(66824, 67612, 67613, 67614) then	-- Paralytic Bite
 		timerParalyticBite:Start()
 	elseif args:IsSpellID(66879, 67624, 67625, 67626) then	-- Burning Bite
 		timerBurningBite:Start()
@@ -346,6 +349,9 @@ function mod:SPELL_DAMAGE(args)
 		specWarnFireBomb:Show()
 	elseif args:IsPlayer() and args:IsSpellID(66881, 67638, 67639, 67640) then							-- Slime Pool
 		specWarnSlimePool:Show()
+	elseif args:IsSpellID(66881, 67638, 67639, 67640) and DBM:GetRaidRank() >= 1 and GetTime() - poolSpam > 5 and self.Options.AnnounceSlimePool then
+		poolSpam = GetTime()
+		SendChatMessage(L.YellSlimePool, "YELL")
 	end
 end
 
@@ -412,7 +418,7 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		updateHealthFrame(2)
 		self:ScheduleMethod(15, "WormsEmerge")
 		if self.Options.RangeFrame then
-			DBM.RangeCheck:Show(10)
+			DBM.RangeCheck:Show(12)
 		end
 	elseif msg == L.Phase3 or msg:find(L.Phase3) then --Icehowl
 		timerNextBoss:Cancel()
@@ -443,8 +449,6 @@ function mod:UNIT_DIED(args)
 		timerAcidicSpewCD:Cancel()
 		if DreadscaleActive then
 			timerSweepCD:Cancel()
-		else
-			timerSlimePoolCD:Cancel()
 		end
 		if DreadscaleDead then
 			DBM.BossHealth:RemoveBoss(35144) -- remove Acidmaw from the health frame
@@ -456,9 +460,7 @@ function mod:UNIT_DIED(args)
 		timerBurningSpray:Cancel()
 		timerBurningBite:Cancel()
 		timerMoltenSpewCD:Cancel()
-		if DreadscaleActive then
-			timerSlimePoolCD:Cancel()
-		else
+		if not DreadscaleActive then
 			timerSweepCD:Cancel()
 		end
 		if AcidmawDead then

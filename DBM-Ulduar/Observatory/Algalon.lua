@@ -55,7 +55,7 @@ function mod:OnCombatEnd(wipe)
 end
 
 function mod:startTimers()
-	enrageTimer:Start(300)
+	enrageTimer:Start(360)
 	timerNextBigBang:Start(90)
 	announcePreBigBang:Schedule(80)
 	timerCDCosmicSmash:Start(25)
@@ -119,11 +119,13 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		warned_preP2 = false
 		warned_star = false
 		timerCombatStart:Start()
+		self:UnscheduleMethod("startTimers")
 		self:ScheduleMethod(8, "startTimers")
 	elseif msg == L.YellPull2 and first_pull == true then
 		warned_preP2 = false
 		warned_star = false
 		timerCombatStart:Start()
+		self:UnscheduleMethod("startTimers")
 		self:ScheduleMethod(8, "startTimers")
 	end
 end
