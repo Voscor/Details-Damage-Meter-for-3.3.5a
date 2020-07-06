@@ -55,7 +55,7 @@ function mod:OnCombatEnd(wipe)
 end
 
 function mod:startTimers()
-	enrageTimer:Start(300)
+	enrageTimer:Start(360)
 	timerNextBigBang:Start(90)
 	announcePreBigBang:Schedule(80)
 	timerCDCosmicSmash:Start(25)
