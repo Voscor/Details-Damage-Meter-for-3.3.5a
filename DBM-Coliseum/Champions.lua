@@ -67,6 +67,7 @@ local isDispeller = select(2, UnitClass("player")) == "WARRIOR"
 -- Death Knight
 local warnChainsofIce		= mod:NewTargetAnnounce(66020, 2) 				-- 66020
 local warnDeathgrip			= mod:NewTargetAnnounce(66017, 2) 				-- 66017
+local warnDaD				= mod:NewSpellAnnounce(43265, 1)
 -- Paladin
 local warnHandofFreedom		= mod:NewTargetAnnounce(66115, 3) 				-- 66115 
 local warnHandofProt		= mod:NewTargetAnnounce(66009, 3) 				-- 66009
@@ -83,6 +84,7 @@ local warnCounterspell		= mod:NewTargetAnnounce(65790, 1)				-- 65790
 local warnHellfire			= mod:NewSpellAnnounce(68147, 4) 				-- 68147
 local warnFear				= mod:NewTargetAnnounce(65809, 1) 				-- 65809
 local warnDeathCoil			= mod:NewTargetAnnounce(65820, 1) 				-- 65820
+local warnPrison			= mod:NewTargetAnnounce(45922, 1)
 -- Warrior
 local preWarnBladestorm 	= mod:NewSoonAnnounce(65947, 3) 				-- 65947
 local warnBladestorm		= mod:NewSpellAnnounce(65947, 4) 				-- 65947
@@ -114,6 +116,12 @@ local warnWingClip			= mod:NewTargetAnnounce(66207, 1) 				-- 66207
 local warnWyvernSting		= mod:NewTargetAnnounce(65878, 1) 				-- 65878, 65877
 local warnFrostTrap			= mod:NewSpellAnnounce(65880, 3) 				-- 65880
 local warnDisengage			= mod:NewSpellAnnounce(65869, 3) 				-- 65869
+-- Demon Hunter
+local warnDHFire			= mod:NewSpellAnnounce(71264,3)
+
+--Metamorphosis cuz on DH and Demo Lock with the same spell ID kek
+local warnMeta				= mod:NewTargetAnnounce(47241, 1)
+
 
 
 local timerBladestorm		= mod:NewBuffActiveTimer(8, 65947)
@@ -143,10 +151,13 @@ local specWarnEarthShield	= mod:NewSpecialWarningDispel(66063, isDispeller)
 local specWarnAvengingWrath = mod:NewSpecialWarningDispel(66011, isDispeller)
 local specWarnBloodlust 	= mod:NewSpecialWarningDispel(65980, isDispeller)
 local specWarnHeroism 		= mod:NewSpecialWarningDispel(65983, isDispeller)
+local specWarnDHFire		= mod:NewSpecialWarningRun(72637)
+local specWarnDaD			= mod:NewSpecialWarningMove(52212)
 
 local tranqSpam = 0
 
 mod:AddBoolOption("PlaySoundOnBladestorm", mod:IsMelee())
+mod:AddBoolOption("PlaySoundOnDaD", true)
 
 
 function mod:OnCombatStart(delay)
@@ -164,6 +175,8 @@ function mod:SPELL_CAST_SUCCESS(args)
 		timerDeathgripCD:Start()
 	elseif args:IsSpellID(66020) and args:IsDestTypePlayer() then 	-- Chains of Ice 
 		warnChainsofIce:Show(args.destName)
+	elseif args:IsSpellID(43265) then	-- Death and Decay
+		warnDaD:Show()
 	-- Paladin
 	elseif args:IsSpellID(68758, 68757, 68756, 66115) and not args:IsDestTypePlayer() then	-- Hand of Freedom 
 		warnHandofFreedom:Show(args.destName)
@@ -246,18 +259,28 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif args:IsSpellID(65869) then								-- Disengage
 		warnDisengage:Show()
 		timerDisengageCD:Start()
+	-- Demon Hunter
+	elseif args:IsSpellID(71264) then
+		warnDHFire:Show(args.destName)
 	end
 end
 
 function mod:SPELL_AURA_APPLIED(args)
 	-- Death Knight
+	if args:IsPlayer() and args:IsSpellID(52212) then
+		specWarnDaD:Show()
+		if self.Options.PlaySoundOnDaD then
+			PlaySoundFile("Sound\\Creature\\HoodWolf\\HoodWolfTransformPlayer01.wav")
+		end
 	-- Paladin
 	-- Mage
-	if args:IsSpellID(65801) then									-- Polymorph
+	elseif args:IsSpellID(65801) then									-- Polymorph
 		warnSheep:Show(args.destName)
 	-- Warlock
 	elseif args:IsSpellID(65809) then								-- Fear
 		warnFear:Show(args.destName)
+	elseif args:IsSpellID(45922) then
+		warnPrison:Show(args.destName)
 	-- Warrior
 	elseif args:IsSpellID(65927, 65929) then						-- Charge
 		warnCharge:Show(args.destName)
@@ -288,6 +311,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnDeterrence:Show()
 	elseif args:IsSpellID(65878, 65877) then						-- Wyvern Sting
 		warnWyvernSting:Show(args.destName)
+	-- Metamorphosis
+	elseif args:IsSpellID(47241) then
+		warnMeta:Show(args.destName) --pewnie bedzie felguard xd
 	end
 end
 
