@@ -47,7 +47,8 @@ L:SetOptionLocalization{
 	YellOnCharge				= "Yell on Icehowl charge",
 	PlaySoundBloopers			= "Play sound bloopers",
 	WarningImpale				= DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(67479, GetSpellInfo(67479) or "unknown"),
-	YellOnImpale				= "Yell on $spell:67479 (4+ stacks)"
+	YellOnImpale				= "Yell on $spell:67479 (4+ stacks)",
+	AnnounceSlimePool			= "Announce $spell:67640 spawn (Frosthold workaround)\nRequires assist and announce to be enabled"
 }
 
 L:SetTimerLocalization{
@@ -93,7 +94,7 @@ L:SetTimerLocalization{
 L:SetMiscLocalization{
 	WhisperFlame		= "Legion Flame on you",
 	IncinerateTarget	= "Incinerate Flesh: %s",
-	YellTouch			= "Touch of Jaraxxus on me - MOVE AWAY!"
+	YellTouch			= "Touch on me!"
 }
 
 L:SetOptionLocalization{
@@ -109,7 +110,8 @@ L:SetOptionLocalization{
 	LegionFlameWhisper			= "Send whisper to Legion Flame targets",
 	LegionFlameRunSound			= "Play sound on Legion Flame",
 	IncinerateShieldFrame		= "Show boss health with a health bar for Incinerate Flesh",
-	YellTouch					= "Yell on $spell:66209"
+	YellTouch					= "Yell on $spell:66209",
+	SoundTouch					= "Play sound on $spell:66209"
 }
 
 L:SetMiscLocalization{
@@ -172,7 +174,8 @@ L:SetMiscLocalization{
 } 
 
 L:SetOptionLocalization{
-	PlaySoundOnBladestorm	= "Play sound on Bladestorm"
+	PlaySoundOnBladestorm	= "Play sound on $spell:65947",
+	PlaySoundOnDaD			= "Play sound on $spell:43265"
 }
 
 ---------------------
