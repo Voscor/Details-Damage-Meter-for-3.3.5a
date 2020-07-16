@@ -17,9 +17,9 @@ mod:RegisterEvents(
 )
 
 
-if UnitFactionGroup("player") == "Alliance" then
+--[[if UnitFactionGroup("player") == "Alliance" then
 	mod:RegisterKill("yell", L.AllianceVictory)
-	--[[mod:SetBossHealthInfo(
+	mod:SetBossHealthInfo(
 	-- Horde
 		34458, L.Gorgrim,
 		34451, L.Birana,
@@ -35,10 +35,10 @@ if UnitFactionGroup("player") == "Alliance" then
 		34455, L.Broln,
 		34450, L.Harkzog,
 		34453, L.Narrhok
-	)--]]
+	)
 else
 	mod:RegisterKill("yell", L.HordeVictory)
-	--[[mod:SetBossHealthInfo(
+	mod:SetBossHealthInfo(
 	-- Alliance
 		34461, L.Tyrius,
 		34460, L.Kavina,
@@ -54,8 +54,8 @@ else
 		34463, L.Shaabad,
 		34474, L.Serissa,
 		34475, L.Shocuul
-	)--]]
-end
+	)
+end]]--
 
 local isDispeller = select(2, UnitClass("player")) == "WARRIOR"
 				or select(2, UnitClass("player")) == "PRIEST"
@@ -144,7 +144,6 @@ local specWarnAvengingWrath = mod:NewSpecialWarningDispel(66011, isDispeller)
 local specWarnBloodlust 	= mod:NewSpecialWarningDispel(65980, isDispeller)
 local specWarnHeroism 		= mod:NewSpecialWarningDispel(65983, isDispeller)
 
-local tranqSpam = 0
 
 mod:AddBoolOption("PlaySoundOnBladestorm", mod:IsMelee())
 
@@ -230,7 +229,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnBarkskin:Show()
 	-- Rogue
 	elseif args:IsSpellID(66178, 68759, 68760, 68761) then			-- Shadowstep 
-		warnShadowstep:Show(args.destName)
+		warnShadowstep:Show()
 		timerShadowstepCD:Start()
 	elseif args:IsSpellID(65960) then								-- Blind
 		warnBlind:Show(args.destName)
@@ -278,8 +277,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnCyclone:Show(args.destName)
 	elseif args:IsSpellID(65857) then								-- Entangling Roots
 		warnEntanglingRoots:Show(args.destName)
-	elseif args:IsSpellID(66086, 67974, 67975, 67976) and GetTime() - tranqSpam > 1 then			-- Tranquility
-		tranqSpam = GetTime()
+	elseif args:IsSpellID(66086, 67974, 67975, 67976) then			-- Tranquility
 		warnTranquility:Show()
 		specWarnTranquility:Show()
 	-- Rogue
