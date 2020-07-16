@@ -65,6 +65,7 @@ mod:AddBoolOption("IncinerateFleshIcon", true)
 mod:RemoveOption("HealthFrame")
 mod:AddBoolOption("IncinerateShieldFrame", true, "misc")
 mod:AddBoolOption("YellTouch", true, "announce")
+mod:AddBoolOption("SoundTouch", true)
 
 altIcon = true
 
@@ -156,6 +157,9 @@ function mod:SPELL_AURA_APPLIED(args)
 		end
 		if args:IsPlayer() and self.Options.YellTouch then
 			SendChatMessage(L.YellTouch, "SAY")
+		end
+		if args:IsPlayer() and self.Options.SoundTouch then
+			PlaySoundFile("Interface\\Addons\\DBM-Core\\sounds\\touch.wav")
 		end
 		warnTouch:Show(args.destName)
 		timerTouch:Start(args.destName)
