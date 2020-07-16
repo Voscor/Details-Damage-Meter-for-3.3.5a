@@ -110,11 +110,7 @@ local function CreatePluginFrames()
 		
 		elseif (event == "COMBAT_PLAYER_ENTER") then
 			DpsTuningPlugin:OnCombatStart(...)
-
-		elseif (event == "COMBAT_INVALID") then
-			--DpsTuningPlugin:Reset()
-			--print("invalid combat...")
-
+			
 		elseif (event == "COMBAT_PLAYER_LEAVE") then
 			DpsTuningPlugin:OnCombatEnd(...)
 
@@ -1171,7 +1167,7 @@ function DpsTuningPlugin:OnEvent(_, event, ...)
 				--> create main plugin object
 				CreatePluginFrames()
 				
-				local MINIMAL_DETAILS_VERSION_REQUIRED = 1
+				local MINIMAL_DETAILS_VERSION_REQUIRED = 28
 				
 				local default_settings = {
 					SpellBarsShowType = 1,
@@ -1187,7 +1183,6 @@ function DpsTuningPlugin:OnEvent(_, event, ...)
 				_G._details:RegisterEvent(DpsTuningPlugin, "COMBAT_PLAYER_ENTER")
 				_G._details:RegisterEvent(DpsTuningPlugin, "COMBAT_PLAYER_LEAVE")
 				_G._details:RegisterEvent(DpsTuningPlugin, "DETAILS_DATA_RESET")
-				_G._details:RegisterEvent(DpsTuningPlugin, "COMBAT_INVALID")
 				
 			end
 		end

@@ -352,8 +352,6 @@
 				end
 				if (zone == "raid") then
 					channel = "RAID"
-				else
-					channel = "PARTY"
 				end
 			elseif (where == 2) then
 				if (zone ~= "raid") then

@@ -2036,6 +2036,7 @@ function _details:SwitchTable(instance, segment, attribute, sub_attribute, start
 			_details.popup:Select(2, instance.sub_attribute, attribute)
 		end
 
+		--_details:SetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1", nil)
 		if (not _details:GetTutorialCVar("ATTRIBUTE_SELECT_TUTORIAL1") and not _details.initializing and not starting_instance) then
 			if (not _G["DetailsWelcomeWindow"] or not _G["DetailsWelcomeWindow"]:IsShown()) then
 				_details:TutorialBookmark(instance)
@@ -2280,11 +2281,9 @@ function _details:SetAttributesOption(instance, func)
 	--> custom
 	CoolTip:AddMenu(1, func, nil, 5, nil, attributes.list[5], nil, true)
 	CoolTip:AddIcon("Interface\\AddOns\\Details\\images\\attributes_icons", 1, 1, 20, 20, p*(5-1), p*(5), 0, 1)
-
 	CoolTip:AddMenu(2, _details.OpenCustomDisplayWindow, nil, nil, nil, Loc["STRING_CUSTOM_NEW"], "Interface\\AddOns\\Details\\images\\Character-Plus", true)
-	CoolTip:AddLine("$div", nil, 2, nil, -6, -9)
-
-	for index, custom in _ipairs(_details.custom) do
+	
+	for index, custom in _ipairs(_details.custom) do 
 		if (custom.temp) then
 			CoolTip:AddLine(custom.name .. Loc["STRING_CUSTOM_TEMPORARILY"], nil, 2)
 		else
@@ -2292,27 +2291,23 @@ function _details:SetAttributesOption(instance, func)
 		end
 		
 		CoolTip:AddMenu(2, func, true, 5, index)
-		CoolTip:AddIcon(custom.icon, 2, 1, 20, 20)
+		CoolTip:AddIcon(custom.icon, 2, 1, 16, 16)
 	end
 	
 	--> set the wallpaper on custom
 	GameCooltip:SetWallpaper(2,[[Interface\TALENTFRAME\WarriorArm-TopLeft]], {1, 0, 0, 1}, {1, 1, 1, 0.1})
 
 	if (#_details.custom == 0) then
-		CoolTip:SetLastSelected(2, 5, 2)
+		CoolTip:SetLastSelected(2, 5, 1)
 	else
 		if (instance.attribute == 5) then
-			CoolTip:SetLastSelected(2, 5, instance.sub_attribute+2)
+			CoolTip:SetLastSelected(2, 5, instance.sub_attribute+1)
 		else
-			CoolTip:SetLastSelected(2, 5, instance.sub_attribute_last[5]+2)
+			CoolTip:SetLastSelected(2, 5, instance.sub_attribute_last[5]+1)
 		end
 	end
 
 	CoolTip:SetOption("StatusBarTexture",[[Interface\AddOns\Details\images\bar4_vidro]])
-	CoolTip:SetOption("ButtonsYMod", -7)
-	CoolTip:SetOption("ButtonsYModSub", -7)
-	CoolTip:SetOption("HeighMod", 8)
-	CoolTip:SetOption("HeighModSub", 8)
 	
 	CoolTip:SetLastSelected(1, attribute_active)
 	
@@ -2702,21 +2697,9 @@ function _details:prepare_report(this_report, custom)
 					if (_type(amount) == "number" and amount > 0) then
 						if (keyNameSec) then
 							local dps = GetDpsHps(_thisActor, keyNameSec)
-							--report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
-							if (_details.report_schema == 1) then
-								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _details:ToKMin(_math_floor(amount) ) .. " (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _cstr("%.2f", amount/total*100) .. "%)"
-							elseif (_details.report_schema == 2) then
-								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _details:ToKMin(_math_floor(amount)) .. ")"
-							elseif (_details.report_schema == 3) then
-								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(amount)) .. ", " .. _details:ToKMin(_math_floor(dps)) .. ")"
-							end
+							report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
 						else
-							--report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount).."(".._cstr("%.1f", amount/total*100).."%)"
-							if (_details.report_schema == 1) then
-								report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount) .. " (" .. _cstr("%.1f", amount/total*100) .. "%)"
-							else
-								report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _cstr("%.1f", amount/total*100) .. "% (" .. _details:ToKReport(amount) .. ")"
-							end
+							report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount).."(".._cstr("%.1f", amount/total*100).."%)"
 						end
 						
 					elseif (_type(amount) == "string") then
@@ -2827,21 +2810,9 @@ function _details:prepare_report(this_report, custom)
 						if (amount > 0) then 
 							if (keyNameSec) then
 								local dps = GetDpsHps(_thisActor, keyNameSec)
-								--report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
-								if (_details.report_schema == 1) then
-									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _details:ToKMin(_math_floor(amount) ) .. " (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _cstr("%.2f", amount/total*100) .. "%)"
-								elseif (_details.report_schema == 2) then
-									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(dps)) .. ", " .. _details:ToKMin(_math_floor(amount)) .. ")"
-								elseif (_details.report_schema == 3) then
-									report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "% (" .. _details:ToKMin(_math_floor(amount)) .. ", " .. _details:ToKMin(_math_floor(dps)) .. ")"
-								end
+								report_lines[#report_lines+1] = i .. ". " .. name .. " " .. _cstr("%.2f", amount/total*100) .. "%(" .. _details:comma_value(_math_floor(dps)) .. ", " .. _details:ToK( _math_floor(amount) ) .. ")"
 							else
-								--report_lines[#report_lines+1] = i .. "." .. name .. "   " .. _details:comma_value( _math_floor(amount) ).."(".._cstr("%.1f", amount/total*100).."%)"
-								if (_details.report_schema == 1) then
-									report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _details:ToKReport(amount) .. " (" .. _cstr("%.1f", amount/total*100) .. "%)"
-								else
-									report_lines[#report_lines+1] = i .. ". " .. name .. "   " .. _cstr("%.1f", amount/total*100) .. "% (" .. _details:ToKReport(amount) .. ")"
-								end
+								report_lines[#report_lines+1] = i .. "." .. name .. "   " .. _details:comma_value( _math_floor(amount) ).."(".._cstr("%.1f", amount/total*100).."%)"
 							end
 							
 							amount = amount + 1

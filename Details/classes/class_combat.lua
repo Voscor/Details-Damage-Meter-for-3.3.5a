@@ -16,7 +16,6 @@
 	local _date = date -- lua local
 	local _table_remove = table.remove -- lua local
 	local _rawget = rawget
-	local _math_max = math.max
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
@@ -102,11 +101,11 @@
 	--return the combat time in seconds
 	function combat:GetCombatTime()
 		if (self.end_time) then
-			return _math_max(self.end_time - self.start_time, 0.1)
+			return self.end_time - self.start_time
 		elseif (self.start_time and _details.in_combat) then
-			return _math_max(_timestamp - self.start_time, 0.1)
+			return _timestamp - self.start_time
 		else
-			return 0.1
+			return 0
 		end
 	end
 
