@@ -139,7 +139,6 @@ local timerHoPCD 			= mod:NewCDTimer(300, 66009)
 local timerSilenceCD		= mod:NewCDTimer(45, 65542)
 local timerHeroismCD		= mod:NewCDTimer(300, 65983)
 local timerBloodlustCD		= mod:NewCDTimer(300, 65980)
-local timerPrison			= mod:NewTargetTimer(8, 45922)
 
 
 local specWarnHellfire		= mod:NewSpecialWarningMove(68147)
@@ -211,7 +210,7 @@ function mod:SPELL_CAST_SUCCESS(args)
 	elseif args:IsSpellID(65816, 68145, 68146, 68147) then			-- Hellfire 
 		warnHellfire:Show()
 	elseif args:IsSpellID(65820, 68141, 68139, 68140) then			-- Death Coil 
-		warnDeathCoil:Show(args.destName)	
+		warnDeathCoil:Show(args.destName)
 	-- Warrior
 	elseif args:IsSpellID(65947) then								-- Bladestorm 
 		warnBladestorm:Show()
@@ -282,7 +281,6 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnFear:Show(args.destName)
 	elseif args:IsSpellID(45922) then
 		warnPrison:Show(args.destName)
-		timerPrison:Start(args.destName)
 	-- Warrior
 	elseif args:IsSpellID(65927, 65929) then						-- Charge
 		warnCharge:Show(args.destName)
