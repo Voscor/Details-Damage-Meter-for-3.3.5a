@@ -134,7 +134,7 @@ function mod:UNIT_HEALTH(uId)
 	if not warned_preP2 and self:GetUnitCreatureId(uId) == 32871 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.25 then
 		warned_preP2 = true
 		warnPhase2Soon:Show()
-	elseif not warned_star and self:GetUnitCreatureId(uId) == 32955 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.25 then
+	elseif warned_star == false and self:GetUnitCreatureId(uId) == 32955 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.15 then
 		warned_star = true
 		specwarnStarLow:Show()
 	end

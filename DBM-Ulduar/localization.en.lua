@@ -204,7 +204,7 @@ L:SetOptionLocalization{
 	NextCosmicSmash			= "Show timer for next Cosmic Smash",
 	TimerCombatStart		= "Show timer for start of combat",
 	WarnPhase2Soon			= "Show pre-warning for Phase 2 (at ~25%)",
-	warnStarLow				= "Show special warning when Collapsing Star is low (at ~25%)"
+	warnStarLow				= "Show special warning when Collapsing Star is low (at ~15%)"
 }
 
 L:SetMiscLocalization{
