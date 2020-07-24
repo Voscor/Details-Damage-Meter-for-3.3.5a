@@ -120,7 +120,7 @@ local warnDisengage			= mod:NewSpellAnnounce(65869, 3) 				-- 65869
 local warnDHFire			= mod:NewSpellAnnounce(71264,3)
 
 --Metamorphosis cuz on DH and Demo Lock with the same spell ID kek
-local warnMeta				= mod:NewTargetAnnounce(47241, 1)
+--local warnMeta				= mod:NewTargetAnnounce(47241, 3)
 
 
 
@@ -314,8 +314,8 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif args:IsSpellID(65878, 65877) then						-- Wyvern Sting
 		warnWyvernSting:Show(args.destName)
 	-- Metamorphosis
-	elseif args:IsSpellID(47241) then
-		warnMeta:Show(args.destName) --pewnie bedzie felguard xd
+	--elseif args:IsSpellID(47241) then
+		--warnMeta:Show(args.destName) --pewnie bedzie felguard xd
 	end
 end
 
