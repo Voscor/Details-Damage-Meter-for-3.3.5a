@@ -175,7 +175,8 @@ L:SetMiscLocalization{
 
 L:SetOptionLocalization{
 	PlaySoundOnBladestorm	= "Play sound on $spell:65947",
-	PlaySoundOnDaD			= "Play sound on $spell:43265"
+	PlaySoundOnDaD			= "Play sound on $spell:43265",
+	PlaySoundOnDHFire		= "Play sound on $spell:71264"
 }
 
 ---------------------

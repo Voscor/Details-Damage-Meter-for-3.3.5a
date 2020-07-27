@@ -84,7 +84,6 @@ local warnCounterspell		= mod:NewTargetAnnounce(65790, 1)				-- 65790
 local warnHellfire			= mod:NewSpellAnnounce(68147, 4) 				-- 68147
 local warnFear				= mod:NewTargetAnnounce(65809, 1) 				-- 65809
 local warnDeathCoil			= mod:NewTargetAnnounce(65820, 1) 				-- 65820
-local warnPrison			= mod:NewTargetAnnounce(45922, 1)
 -- Warrior
 local preWarnBladestorm 	= mod:NewSoonAnnounce(65947, 3) 				-- 65947
 local warnBladestorm		= mod:NewSpellAnnounce(65947, 4) 				-- 65947
@@ -117,7 +116,8 @@ local warnWyvernSting		= mod:NewTargetAnnounce(65878, 1) 				-- 65878, 65877
 local warnFrostTrap			= mod:NewSpellAnnounce(65880, 3) 				-- 65880
 local warnDisengage			= mod:NewSpellAnnounce(65869, 3) 				-- 65869
 -- Demon Hunter
-local warnDHFire			= mod:NewSpellAnnounce(71264,3)
+local warnDHFire			= mod:NewSpellAnnounce(72890,3)
+local warnPrison			= mod:NewTargetAnnounce(45922, 1)
 
 --Metamorphosis cuz on DH and Demo Lock with the same spell ID kek
 --local warnMeta				= mod:NewTargetAnnounce(47241, 3)
@@ -140,6 +140,7 @@ local timerSilenceCD		= mod:NewCDTimer(45, 65542)
 local timerHeroismCD		= mod:NewCDTimer(300, 65983)
 local timerBloodlustCD		= mod:NewCDTimer(300, 65980)
 local timerPrison			= mod:NewTargetTimer(8, 45922)
+local timerDHFireSpawning	= mod:NewTargetTimer(6, 71265)
 
 
 local specWarnHellfire		= mod:NewSpecialWarningMove(68147)
@@ -261,8 +262,6 @@ function mod:SPELL_CAST_SUCCESS(args)
 		warnDisengage:Show()
 		timerDisengageCD:Start()
 	-- Demon Hunter
-	elseif args:IsSpellID(71264) then
-		warnDHFire:Show(args.destName)
 	end
 end
 
@@ -280,9 +279,6 @@ function mod:SPELL_AURA_APPLIED(args)
 	-- Warlock
 	elseif args:IsSpellID(65809) then								-- Fear
 		warnFear:Show(args.destName)
-	elseif args:IsSpellID(45922) then
-		warnPrison:Show(args.destName)
-		timerPrison:Start(args.destName)
 	-- Warrior
 	elseif args:IsSpellID(65927, 65929) then						-- Charge
 		warnCharge:Show(args.destName)
@@ -313,15 +309,28 @@ function mod:SPELL_AURA_APPLIED(args)
 		warnDeterrence:Show()
 	elseif args:IsSpellID(65878, 65877) then						-- Wyvern Sting
 		warnWyvernSting:Show(args.destName)
+	-- Demon Hunter
+	elseif args:IsSpellID(71265) then			-- DH Fire Spawning
+		if args.IsPlayer() then
+			specWarnDHFire:Show()
+		end
+		warnDHFire:Show()
+		timerDHFireSpawning:Start()
+	elseif args:IsSpellID(45922) then
+		warnPrison:Show(args.destName)
+		timerPrison:Start(args.destName)
 	-- Metamorphosis
 	--elseif args:IsSpellID(47241) then
-		--warnMeta:Show(args.destName) --pewnie bedzie felguard xd
+		--warnMeta:Show(args.destName)
 	end
 end
 
 function mod:SPELL_DAMAGE(args)
 	if args:IsPlayer() and args:IsSpellID(65817, 68142, 68143, 68144) then
 		specWarnHellfire:Show()
+	end
+	if args:IsPlaeyr() and args:IsSpellID(72637) then
+		specWarnDHFire:Show()
 	end
 end
 
